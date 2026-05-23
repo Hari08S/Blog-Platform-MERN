@@ -25,7 +25,7 @@ export default function Navbar({ user, showBack, backTo, onLogout }) {
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
     try {
-      const res = await axios.get(`http://localhost:3001/notifications?email=${user.email}`);
+      const res = await axios.get(`https://blog-platform-erux.onrender.com/notifications?email=${user.email}`);
       if (res.data.success) {
         setNotifications(res.data.notifications || []);
         setUnreadCount(res.data.unreadCount || 0);
@@ -44,7 +44,7 @@ export default function Navbar({ user, showBack, backTo, onLogout }) {
     setDropdownOpen(false);
     if (!notifOpen && unreadCount > 0) {
       try {
-        await axios.post("http://localhost:3001/mark-notifications-read", { email: user.email });
+        await axios.post("https://blog-platform-erux.onrender.com/mark-notifications-read", { email: user.email });
         setUnreadCount(0);
         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
       } catch (err) { /* silent */ }

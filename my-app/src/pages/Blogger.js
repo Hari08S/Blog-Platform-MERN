@@ -35,7 +35,7 @@ export default function Blogger({ user }) {
     if (!user) { navigate("/login"); return; }
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:3001/user-blogs?email=${user.email}`);
+      const res = await axios.get(`https://blog-platform-erux.onrender.com/user-blogs?email=${user.email}`);
       if (res.data.success) setBlogs(res.data.blogs || []);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };
@@ -51,7 +51,7 @@ export default function Blogger({ user }) {
       fd.append("content", editedBlog.content); fd.append("author", editedBlog.author);
       fd.append("category", editedBlog.category || "General");
       if (editedBlog.imageFile) fd.append("image", editedBlog.imageFile);
-      const res = await axios.put("http://localhost:3001/update-blog", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      const res = await axios.put("https://blog-platform-erux.onrender.com/update-blog", fd, { headers: { "Content-Type": "multipart/form-data" } });
       if (res.data.success) { setBlogs(prev => prev.map(b => b._id === editedBlog._id ? res.data.blog : b)); setEditMode(null); alert("Blog updated!"); }
     } catch (err) { alert("Failed to update."); } finally { setLoading(false); }
   };
@@ -60,7 +60,7 @@ export default function Blogger({ user }) {
     if (!window.confirm("Delete this blog?")) return;
     try {
       setLoading(true);
-      await axios.delete("http://localhost:3001/delete-blog", { data: { email: user.email, id } });
+      await axios.delete("https://blog-platform-erux.onrender.com/delete-blog", { data: { email: user.email, id } });
       await fetchBlogs();
       alert("Blog deleted!");
     } catch (err) { alert("Failed to delete."); } finally { setLoading(false); }
@@ -78,7 +78,7 @@ export default function Blogger({ user }) {
       fd.append("summary", newBlog.summary); fd.append("content", newBlog.content);
       fd.append("author", newBlog.author); fd.append("category", newBlog.category);
       fd.append("image", newBlog.imageFile);
-      const res = await axios.post("http://localhost:3001/add-blog", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      const res = await axios.post("https://blog-platform-erux.onrender.com/add-blog", fd, { headers: { "Content-Type": "multipart/form-data" } });
       if (res.data.success) { await fetchBlogs(); setShowForm(false); setNewBlog({ title: "", summary: "", content: "", author: "", category: "General", imageFile: null }); alert("Blog published!"); }
     } catch (err) { alert("Failed to add blog."); } finally { setLoading(false); }
   };
@@ -86,7 +86,7 @@ export default function Blogger({ user }) {
   const handleDeleteComment = async (blog, commentId) => {
     if (!window.confirm("Delete this comment?")) return;
     try {
-      const res = await axios.post("http://localhost:3001/delete-comment", {
+      const res = await axios.post("https://blog-platform-erux.onrender.com/delete-comment", {
         requesterEmail: user.email,
         authorEmail: user.email,
         blogId: blog._id,

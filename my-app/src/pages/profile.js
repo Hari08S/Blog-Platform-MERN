@@ -28,7 +28,7 @@ export default function Profile({ user, onUserUpdate }) {
       fd.append("gender", gender);
       fd.append("bio", bio);
       if (selectedImage) fd.append("profileImage", selectedImage);
-      const res = await axios.post("http://localhost:3001/update-user", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      const res = await axios.post("https://blog-platform-erux.onrender.com/update-user", fd, { headers: { "Content-Type": "multipart/form-data" } });
       if (res.data.success) {
         alert("Profile updated!");
         setEditMode(false);

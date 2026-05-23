@@ -166,14 +166,14 @@ export default function Reader({ user }) {
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:3001/all-blogs");
+      const res = await axios.get("https://blog-platform-erux.onrender.com/all-blogs");
       if (res.data.success) setBlogs(res.data.blogs || []);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };
 
   const fetchBookmarks = async () => {
     try {
-      const res = await axios.get(`http://localhost:3001/user-bookmarks?email=${user.email}`);
+      const res = await axios.get(`https://blog-platform-erux.onrender.com/user-bookmarks?email=${user.email}`);
       if (res.data.success) setBookmarks(res.data.bookmarks || []);
     } catch (err) { console.error(err); }
   };
@@ -182,7 +182,7 @@ export default function Reader({ user }) {
 
   const handleLike = async (blog) => {
     try {
-      const res = await axios.post("http://localhost:3001/like-blog", { likerEmail: user.email, authorEmail: blog.authorEmail, blogId: blog._id });
+      const res = await axios.post("https://blog-platform-erux.onrender.com/like-blog", { likerEmail: user.email, authorEmail: blog.authorEmail, blogId: blog._id });
       if (res.data.success) {
         setBlogs(prev => prev.map(b => b._id === blog._id ? { ...b, likes: res.data.likes } : b));
         if (selectedBlog?._id === blog._id) setSelectedBlog(prev => ({ ...prev, likes: res.data.likes }));
@@ -192,7 +192,7 @@ export default function Reader({ user }) {
 
   const handleComment = async (blog, text) => {
     try {
-      const res = await axios.post("http://localhost:3001/add-comment", { commenterName: user.username, commenterEmail: user.email, authorEmail: blog.authorEmail, blogId: blog._id, text });
+      const res = await axios.post("https://blog-platform-erux.onrender.com/add-comment", { commenterName: user.username, commenterEmail: user.email, authorEmail: blog.authorEmail, blogId: blog._id, text });
       if (res.data.success) {
         const updatedComments = [...(blog.comments || []), res.data.comment];
         setBlogs(prev => prev.map(b => b._id === blog._id ? { ...b, comments: updatedComments } : b));
@@ -204,7 +204,7 @@ export default function Reader({ user }) {
   const handleDeleteComment = async (blog, commentId) => {
     if (!window.confirm("Delete this comment?")) return;
     try {
-      const res = await axios.post("http://localhost:3001/delete-comment", {
+      const res = await axios.post("https://blog-platform-erux.onrender.com/delete-comment", {
         requesterEmail: user.email,
         authorEmail: blog.authorEmail,
         blogId: blog._id,
@@ -220,7 +220,7 @@ export default function Reader({ user }) {
 
   const handleEditComment = async (blog, commentId, newText) => {
     try {
-      const res = await axios.post("http://localhost:3001/edit-comment", {
+      const res = await axios.post("https://blog-platform-erux.onrender.com/edit-comment", {
         requesterEmail: user.email,
         authorEmail: blog.authorEmail,
         blogId: blog._id,
@@ -239,14 +239,14 @@ export default function Reader({ user }) {
 
   const handleBookmark = async (blogId) => {
     try {
-      const res = await axios.post("http://localhost:3001/toggle-bookmark", { email: user.email, blogId });
+      const res = await axios.post("https://blog-platform-erux.onrender.com/toggle-bookmark", { email: user.email, blogId });
       if (res.data.success) setBookmarks(res.data.bookmarks);
     } catch (err) { console.error(err); }
   };
 
   const openBlog = async (blog) => {
     setSelectedBlog(blog);
-    try { await axios.post("http://localhost:3001/view-blog", { authorEmail: blog.authorEmail, blogId: blog._id }); } catch (e) {}
+    try { await axios.post("https://blog-platform-erux.onrender.com/view-blog", { authorEmail: blog.authorEmail, blogId: blog._id }); } catch (e) {}
   };
 
   let filtered = blogs;

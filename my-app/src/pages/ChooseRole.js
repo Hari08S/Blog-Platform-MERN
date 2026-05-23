@@ -12,7 +12,7 @@ function ChooseRole({ user, onLogout }) {
 
   useEffect(() => {
     if (user?.email) {
-      axios.get(`http://localhost:3001/dashboard-stats?email=${user.email}`)
+      axios.get(`https://blog-platform-erux.onrender.com/dashboard-stats?email=${user.email}`)
         .then(res => { if (res.data.success) setStats(res.data.stats); })
         .catch(err => console.error(err));
     }

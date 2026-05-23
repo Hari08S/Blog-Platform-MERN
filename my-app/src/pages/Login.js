@@ -29,7 +29,7 @@ export default function AuthPage({ onLogin }) {
     e.preventDefault();
     if (!validateInputs()) return;
     try {
-      const url = isRegister ? "http://localhost:3001/register" : "http://localhost:3001/login";
+      const url = isRegister ? "https://blog-platform-erux.onrender.com/register" : "https://blog-platform-erux.onrender.com/login";
       const data = isRegister ? { username, email, password } : { email, password };
       const result = await axios.post(url, data);
       if (result.data.success) {
