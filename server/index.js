@@ -471,7 +471,7 @@ app.post("/view-blog", async (req, res) => {
 });
 
 const http = require("http");
-const PORT = 3001;
+const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
 server.on("error", (err) => {
