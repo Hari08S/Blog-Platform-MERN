@@ -1,88 +1,78 @@
-import React, { useState } from "react";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { MenuBook, Create, Favorite, ChatBubbleOutline, Visibility } from "@mui/icons-material";
+import axios from "axios";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import "./ChooseRole.css";
 
 function ChooseRole({ user, onLogout }) {
   const navigate = useNavigate();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [popupContent, setPopupContent] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
+  const [stats, setStats] = useState(null);
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
+  useEffect(() => {
+    if (user?.email) {
+      axios.get(`http://localhost:3001/dashboard-stats?email=${user.email}`)
+        .then(res => { if (res.data.success) setStats(res.data.stats); })
+        .catch(err => console.error(err));
+    }
+  }, [user]);
 
-  const handleFooterClick = (content) => {
-    setPopupContent(content);
-    setShowPopup(true);
-  };
-
-  const closePopup = () => {
-    setShowPopup(false);
-  };
+  const handleLogout = () => { localStorage.removeItem("user"); navigate("/login"); onLogout && onLogout(); };
 
   return (
-    <div className="container1">
-      <header className="header1">
-        <div className="title1">Fusion Diaries</div>
-        <div className="nav1" onClick={toggleDropdown}>
-          <AccountCircleIcon className="icon" />
-          {dropdownOpen && (
-            <div className="dropdownMenu1">
-              <div className="dropdownItem1" onClick={() => navigate("/profile")}>
-                My Profile
-              </div>
-              <div className="dropdownItem1" onClick={onLogout}>
-                Log Out
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
+    <div className="cr-container">
+      <Navbar user={user} showBack={true} backTo="/" onLogout={handleLogout} />
 
-      <div className="content1">
-        <img src="blogLogo.png" alt="Fusion Diaries Logo" className="logo1" />
-        <h1 className="head1">Welcome to our Blogging Platform</h1>
-        <h1 className="head1">Choose Your Role</h1>
-        <div className="buttonContainer1">
-          <button className="button1" onClick={() => navigate("/reader")}>
-            Reader
-          </button>
-          <button className="button1" onClick={() => navigate("/blogger")}>
-            Blogger
-          </button>
+      <div className="cr-content">
+        <div className="cr-hero">
+          <div className="cr-hero-glow"></div>
+          <h1 className="cr-title">Welcome back, <span className="cr-name">{user?.username}</span></h1>
+          <p className="cr-subtitle">What would you like to do today?</p>
+        </div>
+
+        {stats && (
+          <div className="cr-stats-grid">
+            <div className="cr-stat-card">
+              <div className="cr-stat-icon" style={{background:"rgba(102,126,234,0.15)"}}><Create style={{color:"#667eea"}}/></div>
+              <div className="cr-stat-value">{stats.totalBlogs}</div>
+              <div className="cr-stat-label">Blogs Written</div>
+            </div>
+            <div className="cr-stat-card">
+              <div className="cr-stat-icon" style={{background:"rgba(245,87,108,0.15)"}}><Favorite style={{color:"#f5576c"}}/></div>
+              <div className="cr-stat-value">{stats.totalLikes}</div>
+              <div className="cr-stat-label">Likes Received</div>
+            </div>
+            <div className="cr-stat-card">
+              <div className="cr-stat-icon" style={{background:"rgba(67,206,162,0.15)"}}><ChatBubbleOutline style={{color:"#43cea2"}}/></div>
+              <div className="cr-stat-value">{stats.totalComments}</div>
+              <div className="cr-stat-label">Comments</div>
+            </div>
+            <div className="cr-stat-card">
+              <div className="cr-stat-icon" style={{background:"rgba(255,167,38,0.15)"}}><Visibility style={{color:"#ffa726"}}/></div>
+              <div className="cr-stat-value">{stats.totalViews}</div>
+              <div className="cr-stat-label">Total Views</div>
+            </div>
+          </div>
+        )}
+
+        <div className="cr-roles">
+          <div className="cr-role-card" onClick={() => navigate("/reader")}>
+            <div className="cr-role-icon-wrap reader-icon"><MenuBook style={{fontSize:48}}/></div>
+            <h2>Reader</h2>
+            <p>Discover and explore blogs from the community. Like, comment, and save your favorites.</p>
+            <span className="cr-role-action">Start Reading →</span>
+          </div>
+          <div className="cr-role-card" onClick={() => navigate("/blogger")}>
+            <div className="cr-role-icon-wrap blogger-icon"><Create style={{fontSize:48}}/></div>
+            <h2>Blogger</h2>
+            <p>Write, edit and manage your blog posts. Share your ideas with the world.</p>
+            <span className="cr-role-action">Start Writing →</span>
+          </div>
         </div>
       </div>
 
-      <footer className="footer">
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("For queries, contact us at harisuresh@fusiondiaries.com")}>
-          Help
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("Fusion Diaries is a blog platform where users can share their stories and experiences.")}>
-          About
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("Joining Fusion Diaries can enhance your writing skills and open new career opportunities in content creation.")}>
-          Careers
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("We value your privacy. Your personal data will not be shared without your consent.")}>
-          Privacy
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("By using this platform, you agree to follow our community guidelines and content policies.")}>
-          Terms
-        </a>
-      </footer>
-
-      {showPopup && (
-        <div className="popupOverlay1" onClick={closePopup}>
-          <div className="popup1" onClick={(e) => e.stopPropagation()}>
-            <p>{popupContent}</p>
-            <button className="closeButton1" onClick={closePopup}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      <Footer />
     </div>
   );
 }

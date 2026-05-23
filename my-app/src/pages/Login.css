@@ -1,53 +1,55 @@
-.page100 {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    position: relative;
-  }
-  
-  .background-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-  }
-  
-  .form-container100 {
-    background-color: #d1c096;
-    padding: 30px;
-    border-radius: 15px;
-    width: 350px;
-    text-align: center;
-    position: absolute;
-  }
-  
-  .input100 {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0px;
-    border-radius: 5px;
-    border: none;
-  }
-  
-  .button100 {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 5px;
-    background-color: #4a69bd;
-    color: white;
-    border-radius: 10px;
-    cursor: pointer;
-    border: none;
-  }
-  
-  .link100 {
-    color: black;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap');
+
+.l-page {
+  min-height: 100vh; display: flex; flex-direction: column;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  font-family: 'Inter', sans-serif;
+}
+.l-container {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden; padding: 2rem;
+}
+.l-glow { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(100px); opacity: 0.3; }
+.l-glow.g1 { width: 400px; height: 400px; background: #667eea; top: -100px; right: -50px; }
+.l-glow.g2 { width: 350px; height: 350px; background: #f5576c; bottom: -80px; left: -50px; }
+.l-card {
+  width: 380px; max-width: 90%; padding: 2.5rem;
+  background: rgba(255,255,255,0.05); backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px; text-align: center; position: relative; z-index: 2;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+.l-back-btn {
+  position: absolute; top: 1.5rem; left: 1.5rem;
+  background: transparent; border: none; color: rgba(255,255,255,0.6);
+  cursor: pointer; transition: color 0.3s;
+  display: flex; align-items: center; justify-content: center;
+}
+.l-back-btn:hover { color: #fff; }
+.l-logo-img { width: 60px; height: 60px; border-radius: 14px; object-fit: cover; margin-bottom: 0.8rem; }
+.l-brand {
+  font-family: 'Playfair Display', serif; font-size: 1.5rem;
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
+}
+.l-heading { color: #fff; font-size: 1.5rem; margin: 0 0 0.3rem; }
+.l-sub { color: rgba(255,255,255,0.4); font-size: 0.85rem; margin: 0 0 1.5rem; }
+.l-input {
+  width: 100%; padding: 13px 16px; margin-bottom: 0.8rem;
+  border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05); color: #fff;
+  font-size: 0.9rem; outline: none; box-sizing: border-box; transition: border 0.3s;
+}
+.l-input::placeholder { color: rgba(255,255,255,0.35); }
+.l-input:focus { border-color: #667eea; }
+.l-btn {
+  width: 100%; padding: 13px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff; font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; margin-top: 0.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.l-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,126,234,0.3); }
+.l-toggle { color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-top: 1.2rem; cursor: pointer; transition: color 0.3s; }
+.l-toggle:hover { color: #fff; }

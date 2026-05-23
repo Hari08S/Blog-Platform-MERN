@@ -1,385 +1,257 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FavoriteBorder, Favorite, Edit, Delete, Add, Save } from "@mui/icons-material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { Favorite, Edit, Delete, Add, Save, Close, ChatBubbleOutline, Visibility, AccessTime, DeleteOutline } from "@mui/icons-material";
 import axios from "axios";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import "./Blogger.css";
 
-function ProfileMenu({ user, onLogout }) {
-  const navigate = useNavigate();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+const CATEGORIES = ["Technology", "Lifestyle", "Travel", "Food & Cooking", "Health & Fitness", "Education", "Business", "Entertainment", "Science", "General"];
 
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+function getReadingTime(c) { return Math.max(1, Math.ceil((c?.split(/\s+/).length || 0) / 200)); }
 
-  return (
-    <div className="nav3" onClick={toggleDropdown}>
-      <AccountCircleIcon className="profile-icon3" />
-      {dropdownOpen && (
-        <div className="dropdown-menu3">
-          <div className="dropdown-item3" onClick={() => navigate("/profile")}>My Profile</div>
-          <div className="dropdown-item3" onClick={onLogout}>Log Out</div>
-        </div>
-      )}
-    </div>
-  );
+function timeAgo(dateStr) {
+  if (!dateStr) return "";
+  const seconds = Math.floor((new Date() - new Date(dateStr)) / 1000);
+  if (seconds < 60) return "just now";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  if (seconds < 2592000) return `${Math.floor(seconds / 86400)}d ago`;
+  return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
 export default function Blogger({ user }) {
-  const [search, setSearch] = useState("");
-  const [favorites, setFavorites] = useState([]);
-  const [showFavorites, setShowFavorites] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const [editMode, setEditMode] = useState(null);
   const [editedBlog, setEditedBlog] = useState({});
-  const [popupContent, setPopupContent] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [newBlog, setNewBlog] = useState({ title: "", summary: "", content: "", author: "", imageFile: null });
+  const [newBlog, setNewBlog] = useState({ title: "", summary: "", content: "", author: "", category: "General", imageFile: null });
+  const [commentsBlog, setCommentsBlog] = useState(null); // Blog whose comments are being viewed
   const navigate = useNavigate();
 
   const fetchBlogs = async () => {
-    if (!user) {
-      console.log("No user, redirecting to login");
-      navigate("/login");
-      return;
-    }
+    if (!user) { navigate("/login"); return; }
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:3001/user-blogs?email=${user.email}`);
-      console.log("Fetched user blogs:", response.data);
-      if (response.data.success) {
-        setBlogs(response.data.blogs || []);
-      } else {
-        console.error("Failed to fetch blogs:", response.data.message);
-        setBlogs([]);
-      }
-    } catch (err) {
-      console.error("Error fetching blogs:", err);
-      setBlogs([]);
-    } finally {
-      setLoading(false);
-    }
+      const res = await axios.get(`http://localhost:3001/user-blogs?email=${user.email}`);
+      if (res.data.success) setBlogs(res.data.blogs || []);
+    } catch (err) { console.error(err); } finally { setLoading(false); }
   };
 
-  useEffect(() => {
-    fetchBlogs();
-  }, [user, navigate]);
-
-  const handleFooterClick = (content) => {
-    setPopupContent(content);
-    setShowPopup(true);
-  };
-
-  const closePopup = () => setShowPopup(false);
-
-  const toggleFavorite = (id) => {
-    setFavorites((prev) => (prev.includes(id) ? prev.filter((fav) => fav !== id) : [...prev, id]));
-  };
-
-  const handleEdit = (blog) => {
-    setEditMode(blog._id);
-    setEditedBlog({ ...blog, imageFile: null });
-  };
+  useEffect(() => { fetchBlogs(); }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSave = async () => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append("email", user.email);
-      formData.append("id", editedBlog._id);
-      formData.append("title", editedBlog.title);
-      formData.append("summary", editedBlog.summary);
-      formData.append("content", editedBlog.content);
-      formData.append("author", editedBlog.author); // Use the edited author
-      if (editedBlog.imageFile) formData.append("image", editedBlog.imageFile);
-
-      const response = await axios.put("http://localhost:3001/update-blog", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      if (response.data.success) {
-        setBlogs((prevBlogs) =>
-          prevBlogs.map((blog) => (blog._id === editedBlog._id ? response.data.blog : blog))
-        );
-        setEditMode(null);
-        alert("Blog updated successfully!");
-      } else {
-        alert("Failed to update blog: " + response.data.message);
-      }
-    } catch (err) {
-      console.error("Error updating blog:", err);
-      alert("Failed to update blog.");
-    } finally {
-      setLoading(false);
-    }
+      const fd = new FormData();
+      fd.append("email", user.email); fd.append("id", editedBlog._id);
+      fd.append("title", editedBlog.title); fd.append("summary", editedBlog.summary);
+      fd.append("content", editedBlog.content); fd.append("author", editedBlog.author);
+      fd.append("category", editedBlog.category || "General");
+      if (editedBlog.imageFile) fd.append("image", editedBlog.imageFile);
+      const res = await axios.put("http://localhost:3001/update-blog", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      if (res.data.success) { setBlogs(prev => prev.map(b => b._id === editedBlog._id ? res.data.blog : b)); setEditMode(null); alert("Blog updated!"); }
+    } catch (err) { alert("Failed to update."); } finally { setLoading(false); }
   };
 
   const handleDelete = async (id) => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    if (window.confirm("Are you sure you want to delete this blog?")) {
-      try {
-        setLoading(true);
-        await axios.delete("http://localhost:3001/delete-blog", { data: { email: user.email, id } });
-        await fetchBlogs();
-        alert("Blog deleted successfully!");
-      } catch (err) {
-        console.error("Error deleting blog:", err);
-        alert("Failed to delete blog.");
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  const handleImageUpload = (event, isNewBlog = false) => {
-    const file = event.target.files[0];
-    if (file) {
-      if (isNewBlog) {
-        setNewBlog((prev) => ({ ...prev, imageFile: file }));
-      } else {
-        setEditedBlog((prev) => ({ ...prev, imageFile: file }));
-      }
-    }
-  };
-
-  const handleNewBlog = () => {
-    const author = prompt("Enter author name:", user?.username || "");
-    if (author === null || author.trim() === "") return;
-    setShowForm(true);
-    setNewBlog({ title: "", summary: "", content: "", author: author.trim(), imageFile: null });
+    if (!window.confirm("Delete this blog?")) return;
+    try {
+      setLoading(true);
+      await axios.delete("http://localhost:3001/delete-blog", { data: { email: user.email, id } });
+      await fetchBlogs();
+      alert("Blog deleted!");
+    } catch (err) { alert("Failed to delete."); } finally { setLoading(false); }
   };
 
   const handleAddBlog = async (e) => {
     e.preventDefault();
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    if (!newBlog.title || !newBlog.summary || !newBlog.content || !newBlog.imageFile || !newBlog.author) {
-      alert("Please fill all required fields (title, summary, content, author, image).");
-      return;
+    if (!newBlog.title || !newBlog.summary || !newBlog.content || !newBlog.author || !newBlog.imageFile) {
+      alert("Please fill all fields including image."); return;
     }
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append("email", user.email);
-      formData.append("title", newBlog.title);
-      formData.append("summary", newBlog.summary);
-      formData.append("content", newBlog.content);
-      formData.append("author", newBlog.author);
-      formData.append("image", newBlog.imageFile);
+      const fd = new FormData();
+      fd.append("email", user.email); fd.append("title", newBlog.title);
+      fd.append("summary", newBlog.summary); fd.append("content", newBlog.content);
+      fd.append("author", newBlog.author); fd.append("category", newBlog.category);
+      fd.append("image", newBlog.imageFile);
+      const res = await axios.post("http://localhost:3001/add-blog", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      if (res.data.success) { await fetchBlogs(); setShowForm(false); setNewBlog({ title: "", summary: "", content: "", author: "", category: "General", imageFile: null }); alert("Blog published!"); }
+    } catch (err) { alert("Failed to add blog."); } finally { setLoading(false); }
+  };
 
-      const response = await axios.post("http://localhost:3001/add-blog", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+  const handleDeleteComment = async (blog, commentId) => {
+    if (!window.confirm("Delete this comment?")) return;
+    try {
+      const res = await axios.post("http://localhost:3001/delete-comment", {
+        requesterEmail: user.email,
+        authorEmail: user.email,
+        blogId: blog._id,
+        commentId,
       });
-
-      if (response.data.success) {
-        const newBlogEntry = {
-          ...response.data.blog,
-          author: newBlog.author,
-        };
-        setBlogs((prevBlogs) => [...prevBlogs, newBlogEntry]);
-        setShowForm(false);
-        setNewBlog({ title: "", summary: "", content: "", author: user.username, imageFile: null });
-        await fetchBlogs();
-        alert("Blog added successfully!");
-      } else {
-        alert("Failed to add blog: " + response.data.message);
+      if (res.data.success) {
+        const updatedComments = (blog.comments || []).filter(c => c._id !== commentId);
+        setBlogs(prev => prev.map(b => b._id === blog._id ? { ...b, comments: updatedComments } : b));
+        setCommentsBlog(prev => prev ? { ...prev, comments: updatedComments } : null);
       }
-    } catch (err) {
-      console.error("Error adding blog:", err);
-      alert("Failed to add blog.");
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); }
   };
 
-  const handleCancelAdd = () => {
-    setShowForm(false);
-    setNewBlog({ title: "", summary: "", content: "", author: user.username, imageFile: null });
-  };
-
-  const handleLogout = () => navigate("/login");
-
-  const filteredBlogs = showFavorites
-    ? blogs.filter((blog) => favorites.includes(blog._id))
-    : blogs.filter((blog) => blog.title.toLowerCase().includes(search.toLowerCase()));
+  const handleLogout = () => { localStorage.removeItem("user"); navigate("/login"); };
+  const filtered = blogs.filter(b => b.title.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="container3">
-      <div className="header-container3">
-        <h1 className="header3">My Blogs</h1>
-        <div className="profile-menu3">
-          <ProfileMenu user={user} onLogout={handleLogout} />
-        </div>
-      </div>
-      <div className="welcome-message3">
-        Welcome, <strong>{user?.username}</strong>!
-      </div>
-      <div className="search-container3">
-        <input
-          type="text"
-          placeholder="Search my blogs..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="input3"
-        />
-        <div className="button-container3">
-          <button onClick={handleNewBlog} className="add-button3">
-            <Add /> Add Blog
+    <div className="b-container">
+      <Navbar user={user} showBack={true} backTo="/choose-role" onLogout={handleLogout} />
+
+      <div className="b-toolbar">
+        <h2 className="b-page-title">My Blogs <span className="b-count">{blogs.length}</span></h2>
+        <div className="b-toolbar-right">
+          <input className="b-search" placeholder="🔍  Search my blogs..." value={search} onChange={e => setSearch(e.target.value)} />
+          <button className="b-add-btn" onClick={() => { setShowForm(true); setNewBlog({ title: "", summary: "", content: "", author: user?.username || "", category: "General", imageFile: null }); }}>
+            <Add /> New Blog
           </button>
-          <div className="favorite-button3" onClick={() => setShowFavorites(!showFavorites)}>
-            {showFavorites ? <Favorite /> : <FavoriteBorder />} Favorites
-          </div>
         </div>
       </div>
+
       {showForm && (
-        <form onSubmit={handleAddBlog} className="form3">
-          <input
-            type="text"
-            placeholder="Title"
-            className="input3"
-            value={newBlog.title}
-            onChange={(e) => setNewBlog((prev) => ({ ...prev, title: e.target.value }))}
-          />
-          <input
-            type="text"
-            placeholder="Summary"
-            className="input3"
-            value={newBlog.summary}
-            onChange={(e) => setNewBlog((prev) => ({ ...prev, summary: e.target.value }))}
-          />
-          <textarea
-            placeholder="Write your blog content here..."
-            className="input3 textarea3"
-            value={newBlog.content}
-            onChange={(e) => setNewBlog((prev) => ({ ...prev, content: e.target.value }))}
-          />
-          <input
-            type="text"
-            placeholder="Author"
-            className="input3"
-            value={newBlog.author}
-            onChange={(e) => setNewBlog((prev) => ({ ...prev, author: e.target.value }))}
-          />
-          <input type="file" accept="image/*" className="input3" onChange={(e) => handleImageUpload(e, true)} />
-          <div className="form-actions3">
-            <button type="submit" className="save-button3" disabled={loading}>
-              <Save /> {loading ? "Publishing..." : "Publish"}
-            </button>
-            <button type="button" onClick={handleCancelAdd} className="cancel-button3" disabled={loading}>
-              Cancel
-            </button>
-          </div>
-        </form>
+        <div className="b-form-overlay" onClick={() => setShowForm(false)}>
+          <form className="b-form" onClick={e => e.stopPropagation()} onSubmit={handleAddBlog}>
+            <div className="b-form-header">
+              <h2>Create New Blog</h2>
+              <button type="button" className="b-form-close" onClick={() => setShowForm(false)}><Close /></button>
+            </div>
+            <input className="b-input" placeholder="Blog Title" value={newBlog.title} onChange={e => setNewBlog(p => ({ ...p, title: e.target.value }))} />
+            <input className="b-input" placeholder="Short Summary" value={newBlog.summary} onChange={e => setNewBlog(p => ({ ...p, summary: e.target.value }))} />
+            <textarea className="b-input b-textarea" placeholder="Write your blog content..." value={newBlog.content} onChange={e => setNewBlog(p => ({ ...p, content: e.target.value }))} />
+            <div className="b-form-row">
+              <input className="b-input" placeholder="Author Name" value={newBlog.author} onChange={e => setNewBlog(p => ({ ...p, author: e.target.value }))} style={{flex:1}} />
+              <select className="b-input b-select" value={newBlog.category} onChange={e => setNewBlog(p => ({ ...p, category: e.target.value }))}>
+                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="b-file-wrap">
+              <label className="b-file-label">
+                📸 {newBlog.imageFile ? newBlog.imageFile.name : "Choose Cover Image"}
+                <input type="file" accept="image/*" hidden onChange={e => e.target.files[0] && setNewBlog(p => ({ ...p, imageFile: e.target.files[0] }))} />
+              </label>
+            </div>
+            <div className="b-form-actions">
+              <button type="submit" className="b-publish-btn" disabled={loading}><Save /> {loading ? "Publishing..." : "Publish"}</button>
+              <button type="button" className="b-cancel-btn" onClick={() => setShowForm(false)}>Cancel</button>
+            </div>
+          </form>
+        </div>
       )}
-      <div className="blog-list3">
-        {loading ? (
-          <p>Loading blogs...</p>
-        ) : filteredBlogs.length > 0 ? (
-          filteredBlogs.map((blog) => (
-            <div
-              key={blog._id}
-              className="blog-item3"
-              style={{
-                backgroundImage: `url(${blog.image?.data ? `data:${blog.image.contentType};base64,${blog.image.data}` : "https://via.placeholder.com/800x200?text=No+Image"})`,
-              }}
-            >
+
+      <div className="b-grid">
+        {loading && blogs.length === 0 ? (
+          <div className="b-loading"><div className="b-spinner"></div><p>Loading...</p></div>
+        ) : filtered.length > 0 ? (
+          filtered.map(blog => (
+            <div key={blog._id} className="b-card">
               {editMode === blog._id ? (
-                <>
-                  <input
-                    type="text"
-                    value={editedBlog.title || ""}
-                    onChange={(e) => setEditedBlog({ ...editedBlog, title: e.target.value })}
-                    className="input3"
-                    placeholder="Title"
-                  />
-                  <input
-                    type="text"
-                    value={editedBlog.summary || ""}
-                    onChange={(e) => setEditedBlog({ ...editedBlog, summary: e.target.value })}
-                    className="input3"
-                    placeholder="Summary"
-                  />
-                  <textarea
-                    value={editedBlog.content || ""}
-                    onChange={(e) => setEditedBlog({ ...editedBlog, content: e.target.value })}
-                    className="input3 textarea3"
-                    placeholder="Content"
-                  />
-                  <input
-                    type="text"
-                    value={editedBlog.author || ""}
-                    onChange={(e) => setEditedBlog({ ...editedBlog, author: e.target.value })}
-                    className="input3"
-                    placeholder="Author"
-                  />
-                  <input type="file" accept="image/*" onChange={handleImageUpload} className="input3" />
-                  <button onClick={handleSave} className="save-button3" disabled={loading}>
-                    <Save /> {loading ? "Saving..." : "Save"}
-                  </button>
-                </>
+                <div className="b-edit-form">
+                  <input className="b-input" placeholder="Title" value={editedBlog.title || ""} onChange={e => setEditedBlog(p => ({ ...p, title: e.target.value }))} />
+                  <input className="b-input" placeholder="Summary" value={editedBlog.summary || ""} onChange={e => setEditedBlog(p => ({ ...p, summary: e.target.value }))} />
+                  <textarea className="b-input b-textarea" placeholder="Content" value={editedBlog.content || ""} onChange={e => setEditedBlog(p => ({ ...p, content: e.target.value }))} />
+                  <div className="b-form-row">
+                    <input className="b-input" placeholder="Author" value={editedBlog.author || ""} onChange={e => setEditedBlog(p => ({ ...p, author: e.target.value }))} style={{flex:1}} />
+                    <select className="b-input b-select" value={editedBlog.category || "General"} onChange={e => setEditedBlog(p => ({ ...p, category: e.target.value }))}>
+                      {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <input type="file" accept="image/*" className="b-input" onChange={e => e.target.files[0] && setEditedBlog(p => ({ ...p, imageFile: e.target.files[0] }))} />
+                  <div className="b-form-actions">
+                    <button className="b-publish-btn" onClick={handleSave} disabled={loading}><Save /> Save</button>
+                    <button className="b-cancel-btn" onClick={() => setEditMode(null)}>Cancel</button>
+                  </div>
+                </div>
               ) : (
                 <>
-                  <h2>{blog.title}</h2>
-                  <p>{blog.summary}</p>
-                  <h3 className="quote3">
-                    {blog.content} <br /> - <strong>{blog.author}</strong>
-                  </h3>
+                  <div className={`b-card-img ${!blog.image?.data ? 'no-image' : ''}`} style={blog.image?.data ? { backgroundImage: `url(data:${blog.image.contentType};base64,${blog.image.data})` } : {}}>
+                    <span className="b-cat-badge" data-cat={blog.category}>{blog.category || "General"}</span>
+                    {!blog.image?.data && <span className="b-img-placeholder">📝 Blog Post</span>}
+                  </div>
+                  <div className="b-card-body">
+                    <h3 className="b-card-title">{blog.title}</h3>
+                    <p className="b-card-summary">{blog.summary}</p>
+                    <div className="b-card-meta">
+                      <span>By {blog.author}</span>
+                      <span><AccessTime style={{fontSize:14}}/> {getReadingTime(blog.content)} min read</span>
+                    </div>
+                    <div className="b-card-stats">
+                      <span className="b-stat"><Favorite style={{fontSize:16, color:"#f5576c"}}/> {blog.likes?.length || 0} likes</span>
+                      <span className="b-stat b-stat-clickable" onClick={() => setCommentsBlog(blog)}>
+                        <ChatBubbleOutline style={{fontSize:16}}/> {blog.comments?.length || 0} comments
+                      </span>
+                      <span className="b-stat"><Visibility style={{fontSize:16}}/> {blog.views || 0} views</span>
+                    </div>
+                    <div className="b-card-actions">
+                      <button className="b-edit-btn" onClick={() => { setEditMode(blog._id); setEditedBlog({ ...blog, imageFile: null }); }}><Edit /> Edit</button>
+                      <button className="b-delete-btn" onClick={() => handleDelete(blog._id)}><Delete /> Delete</button>
+                    </div>
+                  </div>
                 </>
               )}
-              <div className="action-buttons3">
-                <button onClick={() => toggleFavorite(blog._id)} className="favorite-button3">
-                  {favorites.includes(blog._id) ? <Favorite /> : <FavoriteBorder />} Favorite
-                </button>
-                <button onClick={() => handleEdit(blog)} className="edit-button3" disabled={loading}>
-                  <Edit /> Edit
-                </button>
-                <button onClick={() => handleDelete(blog._id)} className="delete-button3" disabled={loading}>
-                  <Delete /> Delete
-                </button>
-              </div>
             </div>
           ))
         ) : (
-          <p>Your blogs are empty. Add a new blog to get started!</p>
+          <div className="b-empty">
+            <h2>No blogs yet</h2>
+            <p>Click "New Blog" to write your first post!</p>
+          </div>
         )}
       </div>
-      <footer className="footer">
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("For queries, contact us at support@fusiondiaries.com")}>
-          Help
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("Fusion Diaries is a blog platform where users can share their stories.")}>
-          About
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("Joining Fusion Diaries can enhance your writing skills.")}>
-          Careers
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("We value your privacy.")}>
-          Privacy
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("By using this platform, you agree to our guidelines.")}>
-          Terms
-        </a>
-      </footer>
-      {showPopup && (
-        <div className="popupOverlay2" onClick={closePopup}>
-          <div className="popup2" onClick={(e) => e.stopPropagation()}>
-            <p>{popupContent}</p>
-            <button className="closeButton2" onClick={closePopup}>
-              Close
-            </button>
+
+      {/* Comments Modal for Blogger */}
+      {commentsBlog && (
+        <div className="b-comments-overlay" onClick={() => setCommentsBlog(null)}>
+          <div className="b-comments-modal" onClick={e => e.stopPropagation()}>
+            <div className="b-comments-modal-header">
+              <div>
+                <h2>Comments</h2>
+                <p className="b-comments-blog-title">on "{commentsBlog.title}"</p>
+              </div>
+              <button className="b-comments-close" onClick={() => setCommentsBlog(null)}><Close /></button>
+            </div>
+            <div className="b-comments-list">
+              {(commentsBlog.comments || []).length > 0 ? (
+                (commentsBlog.comments || []).slice().reverse().map(c => (
+                  <div key={c._id} className="b-comment-item">
+                    <div className="b-comment-avatar">{c.user?.[0]?.toUpperCase() || "?"}</div>
+                    <div className="b-comment-content">
+                      <div className="b-comment-meta">
+                        <strong>{c.user}</strong>
+                        <span className="b-comment-email">{c.userEmail}</span>
+                        <span className="b-comment-time">{timeAgo(c.createdAt)}</span>
+                        <button
+                          className="b-comment-delete"
+                          title="Delete this comment"
+                          onClick={() => handleDeleteComment(commentsBlog, c._id)}
+                        >
+                          <DeleteOutline style={{ fontSize: 16 }} />
+                        </button>
+                      </div>
+                      <p className="b-comment-text">{c.text}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="b-comments-empty">
+                  <ChatBubbleOutline style={{ fontSize: 40, color: "rgba(255,255,255,0.15)" }} />
+                  <p>No comments on this blog yet</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
+
+      <Footer />
     </div>
   );
 }

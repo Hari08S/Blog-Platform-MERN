@@ -1,79 +1,64 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
+import Footer from "../components/Footer";
 import "./Home.css";
 
 function Home() {
-  const [popupContent, setPopupContent] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
-
-  const handleFooterClick = (content) => {
-    setPopupContent(content);
-    setShowPopup(true);
-  };
-
-  const closePopup = () => {
-    setShowPopup(false);
-  };
-
   return (
-    <div className="container">
-      <header className="navbar">
-        <div className="logo">Fusion Diaries</div>
-        <div className="navLinks">
-          <Link to="/login" className="link">
-            Our Story
-          </Link>
-          <Link to="/login" className="link">
-            Write
-          </Link>
-          <Link to="/login" className="link">
-            Sign In
-          </Link>
-          <Link to="/login">
-            <button className="lbutton">Get Started</button>
-          </Link>
+    <div className="h-container">
+      <header className="h-navbar">
+        <div className="h-nav-brand">
+          <img src="/blogLogo.png" alt="Fusion Diaries" className="h-nav-logo" />
+          <span className="h-logo">Fusion Diaries</span>
+        </div>
+        <div className="h-nav-links">
+          <Link to="/login" className="h-link">About</Link>
+          <Link to="/login" className="h-link">Write</Link>
+          <Link to="/login" className="h-link">Sign In</Link>
+          <Link to="/login"><button className="h-cta-btn">Get Started</button></Link>
         </div>
       </header>
 
-      <div className="hero-section">
-        <h1 className="title">Human stories & ideas</h1>
-        <p className="subtitle">
-          A place to read, write, and deepen your understanding
-        </p>
-        <img src="background.webp" alt="stories" className="image" />
-        <Link to="/login">
-          <button className="ctaButton">Start Reading</button>
-        </Link>
-      </div>
-
-      <footer className="footer">
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("For queries, contact us at harisuresh@fusiondiaries.com")}>
-          Help
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("Fusion Diaries is a blog platform where users can share their stories and experiences.")}>
-          About
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("Joining Fusion Diaries can enhance your writing skills and open new career opportunities in content creation.")}>
-          Careers
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("We value your privacy. Your personal data will not be shared without your consent.")}>
-          Privacy
-        </a>
-        <a href="#" className="footerLink" onClick={() => handleFooterClick("By using this platform, you agree to follow our community guidelines and content policies.")}>
-          Terms
-        </a>
-      </footer>
-
-      {showPopup && (
-        <div className="popupOverlay" onClick={closePopup}>
-          <div className="popup" onClick={(e) => e.stopPropagation()}>
-            <p>{popupContent}</p>
-            <button className="closeButton" onClick={closePopup}>
-              Close
-            </button>
+      <div className="h-hero">
+        <div className="h-hero-glow g1"></div>
+        <div className="h-hero-glow g2"></div>
+        <div className="h-hero-content">
+          <span className="h-badge">✨ Your stories matter</span>
+          <h1 className="h-title">Human stories<br/>& <span className="h-gradient">ideas</span></h1>
+          <p className="h-subtitle">A place to read, write, and deepen your understanding. Share your perspective with a community that cares.</p>
+          <div className="h-hero-btns">
+            <Link to="/login"><button className="h-start-btn">Start Reading</button></Link>
+            <Link to="/login"><button className="h-write-btn">Start Writing</button></Link>
+          </div>
+          <div className="h-hero-stats">
+            <div className="h-hero-stat"><strong>10K+</strong><span>Active Readers</span></div>
+            <div className="h-stat-divider"></div>
+            <div className="h-hero-stat"><strong>5K+</strong><span>Blog Posts</span></div>
+            <div className="h-stat-divider"></div>
+            <div className="h-hero-stat"><strong>2K+</strong><span>Writers</span></div>
           </div>
         </div>
-      )}
+      </div>
+
+      <div className="h-features">
+        <div className="h-feature-card">
+          <div className="h-feature-icon">📖</div>
+          <h3>Read & Discover</h3>
+          <p>Explore blogs across categories like Technology, Lifestyle, Travel, and more.</p>
+        </div>
+        <div className="h-feature-card">
+          <div className="h-feature-icon">✍️</div>
+          <h3>Write & Publish</h3>
+          <p>Create beautiful blog posts with images, categories, and reach a wider audience.</p>
+        </div>
+        <div className="h-feature-card">
+          <div className="h-feature-icon">💬</div>
+          <h3>Engage & Connect</h3>
+          <p>Like, comment, bookmark, and interact with posts from writers around the world.</p>
+        </div>
+      </div>
+
+      <Footer />
     </div>
   );
 }
