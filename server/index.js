@@ -29,161 +29,161 @@ const serializeBlog = (blog, authorName) => ({
     : null,
 });
 
-// Setup Admin User with rich content
+// Setup Admin User with rich content and topic images
 const setupAdmin = async () => {
   try {
-    const adminEmail = "717823p315@kce.ac.in";
+    const oldAdminEmail = "717823p315@kce.ac.in";
+    const adminEmail = "hari1@gmail.com";
 
-    const blogs = [
+    // Delete old admin if exists to clean up reading role views
+    await EmployeeModel.deleteOne({ email: oldAdminEmail });
+
+    // Helper to fetch image as buffer from picsum
+    const fetchImageAsBuffer = async (seed) => {
+      try {
+        const url = `https://picsum.photos/seed/${seed}/800/600`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const arrayBuffer = await response.arrayBuffer();
+        return {
+          data: Buffer.from(arrayBuffer),
+          contentType: response.headers.get("content-type") || "image/jpeg"
+        };
+      } catch (error) {
+        console.error(`Failed to fetch image for seed ${seed}:`, error.message);
+        return null;
+      }
+    };
+
+    console.log("Fetching images for default blogs...");
+    const blogTemplates = [
       {
         title: "Understanding React: A Complete Guide",
         summary: "Learn the fundamentals of React.js and why it dominates modern frontend development.",
-        content: `React is a powerful JavaScript library developed by Facebook for building dynamic user interfaces. Unlike traditional DOM manipulation, React uses a Virtual DOM that compares changes and updates only what is necessary, resulting in blazing-fast performance.
-
-At its core, React follows a component-based architecture. Every piece of the UI — a button, a form, a sidebar — is a reusable component. Components accept inputs called "props" and manage their own internal "state". When state changes, React automatically re-renders the component.
-
-One of React's greatest strengths is JSX, a syntax extension that lets you write HTML-like code inside JavaScript. This makes your code more readable and easier to debug. Combined with hooks like useState and useEffect, you can build complex stateful logic without writing class components.
-
-React also has a massive ecosystem. React Router handles client-side navigation, Redux and Context API manage global state, and tools like Next.js enable server-side rendering. Whether you are building a simple portfolio or a complex enterprise dashboard, React scales beautifully.
-
-Today, React powers some of the world's largest applications including Facebook, Instagram, Netflix, Airbnb, and WhatsApp Web. Its component reusability, strong community, and continuous improvements make it the top choice for frontend developers worldwide.`,
-        author: "John Doe",
+        content: `React is a powerful JavaScript library developed by Facebook for building dynamic user interfaces. Unlike traditional DOM manipulation, React uses a Virtual DOM that compares changes and updates only what is necessary, resulting in blazing-fast performance. At its core, React follows a component-based architecture. Every piece of the UI — a button, a form, a sidebar — is a reusable component. JSX is a syntax extension that lets you write HTML-like code inside JavaScript. This makes your code more readable and easier to debug. Combined with hooks like useState and useEffect, you can build complex stateful logic without writing class components. React powers some of the world's largest applications including Facebook, Instagram, Netflix, Airbnb, and WhatsApp Web.`,
+        author: "Hari",
         authorEmail: adminEmail,
         category: "Technology",
+        seed: "react-tech"
       },
       {
         title: "Why Blogging Matters in the Digital Age",
         summary: "Discover how blogging can transform your career, build your brand, and sharpen your thinking.",
-        content: `In today's digital world, blogging has evolved from a personal hobby into a powerful professional tool. Whether you are a student, a developer, a designer, or an entrepreneur, maintaining a blog can significantly impact your career trajectory.
-
-Writing regularly forces you to organize your thoughts and articulate ideas clearly. When you explain a concept in writing, you deepen your own understanding of it. This is why many top engineers and designers maintain technical blogs — it is both a learning tool and a portfolio piece.
-
-Blogging also builds your personal brand. When recruiters search for candidates, a well-maintained blog with thoughtful articles immediately sets you apart. It demonstrates initiative, expertise, and communication skills — qualities every employer values. A single viral blog post can open doors to job offers, speaking invitations, and consulting opportunities.
-
-From an SEO perspective, consistent blogging drives organic traffic. Each blog post is a new indexed page that can rank in search results, bringing visitors to your site for months or even years. For businesses, this translates directly into leads and revenue.
-
-The beauty of blogging is that anyone can start with zero investment. Platforms like Medium, Dev.to, Hashnode, and WordPress make it easy to publish your first post today. The key is consistency — write regularly, share your unique perspective, and engage with your readers.
-
-Remember: every expert was once a beginner. Your first post does not need to be perfect. It just needs to exist. Start writing, and let your blog grow with you.`,
-        author: "Jane Smith",
+        content: `In today's digital world, blogging has evolved from a personal hobby into a powerful professional tool. Whether you are a student, a developer, a designer, or an entrepreneur, maintaining a blog can significantly impact your career trajectory. Writing regularly forces you to organize your thoughts and articulate ideas clearly. When recruiters search for candidates, a well-maintained blog with thoughtful articles immediately sets you apart. It demonstrates initiative, expertise, and communication skills — qualities every employer values.`,
+        author: "Hari",
         authorEmail: adminEmail,
         category: "Lifestyle",
+        seed: "lifestyle"
       },
       {
-        title: "The Power of JavaScript: From Browser to Server",
-        summary: "Explore why JavaScript is the world's most versatile programming language.",
-        content: `JavaScript was born in 1995 as a simple scripting language for web browsers. Today, it is the most widely used programming language in the world, powering everything from interactive websites to mobile apps, desktop applications, and even machine learning models.
-
-On the frontend, JavaScript frameworks like React, Vue, and Angular have revolutionized how we build user interfaces. They enable Single Page Applications (SPAs) that feel as fast and responsive as native desktop software. Features like real-time updates, animations, and drag-and-drop interfaces are all powered by JavaScript.
-
-The introduction of Node.js in 2009 was a game-changer. It brought JavaScript to the server side, enabling developers to use one language for both frontend and backend. This "full-stack JavaScript" approach simplified development, reduced context-switching, and made it possible for a single developer to build entire applications.
-
-JavaScript's package ecosystem, npm, is the largest software registry in the world with over 2 million packages. Whether you need a date formatting library, a database ORM, or a machine learning toolkit, npm has it. This rich ecosystem means you rarely need to build things from scratch.
-
-Modern JavaScript (ES6+) introduced powerful features like arrow functions, destructuring, template literals, async/await, and modules. These features make the code cleaner, more readable, and easier to maintain. Combined with TypeScript for type safety, JavaScript has matured into a robust, enterprise-grade language.
-
-From frontend to backend, from mobile (React Native) to desktop (Electron), JavaScript truly runs everywhere. Learning JavaScript is not just learning a language — it is gaining access to the entire spectrum of software development.`,
-        author: "Alice Johnson",
+        title: "Wanderlust: Finding Yourself in the Unknown",
+        summary: "Explore the transforming power of travel and why stepping out of your comfort zone is essential.",
+        content: `Travel is more than just visiting new places; it is an active exploration of the self. Stepping out of your familiar surroundings challenges your assumptions, broadens your perspective, and builds resilience. Whether you are wandering through bustling cities or hiking remote mountain trails, travel exposes you to diverse cultures, languages, and philosophies. These experiences cultivate empathy and help you understand that while we may live differently, our shared human experiences connect us all.`,
+        author: "Hari",
         authorEmail: adminEmail,
-        category: "Technology",
+        category: "Travel",
+        seed: "travel-world"
+      },
+      {
+        title: "The Art of Culinary Fusion: Cooking with Passion",
+        summary: "Learn how to blend flavors and techniques from different cultures to create unique culinary masterpieces.",
+        content: `Cooking is a form of artistic expression, and culinary fusion is its most exciting boundary. By combining ingredients and techniques from different cultural traditions, you can create dishes that are familiar yet completely new. The key to successful fusion cooking is balance — understanding how sweet, salty, sour, bitter, and umami elements interact. Don't be afraid to experiment; start by adding a local spice to a classic international recipe, and let your taste buds guide you.`,
+        author: "Hari",
+        authorEmail: adminEmail,
+        category: "Food & Cooking",
+        seed: "culinary"
+      },
+      {
+        title: "Mind over Muscle: A Holistic Approach to Fitness",
+        summary: "Discover why physical fitness starts with a healthy mindset and how to build habits that last.",
+        content: `True fitness is not just about how much weight you can lift or how fast you can run; it is a holistic integration of physical movement, nutrition, and mental well-being. Building a sustainable fitness routine starts with cultivating a positive relationship with your body. Focus on consistency rather than perfection. Find physical activities that you genuinely enjoy, whether it is yoga, weightlifting, swimming, or walking, and nourish your body with wholesome food.`,
+        author: "Hari",
+        authorEmail: adminEmail,
+        category: "Health & Fitness",
+        seed: "fitness-health"
       },
       {
         title: "CSS for Beginners: Styling the Modern Web",
         summary: "Master the fundamentals of CSS and learn how to create beautiful, responsive layouts.",
-        content: `CSS (Cascading Style Sheets) is the language that makes the web beautiful. While HTML provides structure and JavaScript adds interactivity, CSS controls the visual presentation — colors, fonts, spacing, layouts, animations, and responsive design.
-
-The "cascading" in CSS refers to how styles are applied in a priority order. Styles can come from browser defaults, external stylesheets, internal styles, or inline styles. Understanding specificity and the cascade is fundamental to writing predictable CSS.
-
-Modern CSS has evolved dramatically. Flexbox and CSS Grid have replaced the old float-based layouts, making it easy to create complex, responsive designs. Flexbox excels at one-dimensional layouts (rows or columns), while Grid handles two-dimensional layouts (rows AND columns simultaneously).
-
-CSS Custom Properties (variables) allow you to define reusable values like colors and spacing. Combined with the calc() function, you can create dynamic, mathematical relationships between values. This makes maintaining large stylesheets much easier.
-
-CSS animations and transitions bring websites to life. A simple hover effect can transform a static button into an interactive element. Keyframe animations enable complex sequences — loading spinners, page transitions, and scroll-triggered effects that delight users.
-
-Responsive design is no longer optional. With CSS media queries, your layouts adapt to any screen size — from a 4-inch phone to a 32-inch monitor. The mobile-first approach, where you design for small screens first and enhance for larger ones, has become the industry standard.
-
-Tools like CSS preprocessors (Sass, Less), utility frameworks (Tailwind), and component libraries (Bootstrap) extend CSS's capabilities. But understanding vanilla CSS is essential — it is the foundation everything else is built upon.`,
-        author: "Bob Williams",
+        content: `CSS (Cascading Style Sheets) is the language that makes the web beautiful. While HTML provides structure and JavaScript adds interactivity, CSS controls the visual presentation — colors, fonts, spacing, layouts, animations, and responsive design. Modern CSS has evolved dramatically. Flexbox and CSS Grid make it easy to create complex, responsive layouts. Understanding responsive design and media queries ensures your website looks beautiful on any device, from a smartphone to a large desktop monitor.`,
+        author: "Hari",
         authorEmail: adminEmail,
         category: "Education",
+        seed: "education-learn"
       },
       {
-        title: "Mastering Node.js: Backend Development with JavaScript",
-        summary: "Learn how Node.js enables fast, scalable server-side applications.",
-        content: `Node.js transformed JavaScript from a browser-only language into a full-stack powerhouse. Built on Chrome's V8 engine, Node.js executes JavaScript on the server with exceptional speed and efficiency.
-
-The key innovation of Node.js is its event-driven, non-blocking I/O model. Traditional server platforms like PHP or Java create a new thread for each client request, which consumes memory and limits scalability. Node.js, on the other hand, uses a single-threaded event loop that handles thousands of concurrent connections without the overhead of thread management.
-
-This architecture makes Node.js ideal for real-time applications. Chat applications, live notifications, collaborative editing tools, and streaming services all benefit from Node.js's ability to handle many simultaneous connections with low latency.
-
-Express.js is the most popular Node.js framework, providing a minimalist foundation for building web servers and APIs. With Express, you can set up routes, middleware, and error handling in just a few lines of code. Other frameworks like Fastify, Koa, and NestJS offer alternative approaches with different tradeoffs.
-
-Node.js's package manager, npm, gives you access to millions of ready-to-use modules. Need a database driver? Authentication middleware? Email service? There is a well-maintained npm package for almost anything.
-
-MongoDB paired with Mongoose is a popular database choice for Node.js applications. The MERN stack (MongoDB, Express, React, Node.js) has become one of the most widely adopted full-stack combinations, offering a consistent JavaScript experience from database to user interface.
-
-Companies like Netflix, Uber, PayPal, LinkedIn, and NASA use Node.js in production. PayPal reported a 35% decrease in response time and double the number of requests per second after switching from Java to Node.js.`,
-        author: "Charlie Davis",
+        title: "Innovator's Blueprint: Scaling Ideas to Reality",
+        summary: "Key principles for turning your creative concepts into successful, scalable business ventures.",
+        content: `Every great business begins with a single idea, but success lies in the execution. Turning a creative concept into a viable business requires a deep understanding of your target market, a clear value proposition, and a scalable business model. Focus on solving a real problem for your customers, build a minimum viable product (MVP) to test your assumptions quickly, and iterate based on real feedback. Remember, scaling requires building systems and teams that can grow alongside your revenue.`,
+        author: "Hari",
         authorEmail: adminEmail,
-        category: "Technology",
+        category: "Business",
+        seed: "business-growth"
       },
       {
-        title: "The Importance of UX/UI Design in Product Success",
-        summary: "How thoughtful design directly impacts user satisfaction and business outcomes.",
-        content: `User Experience (UX) and User Interface (UI) design are not just about making things look pretty — they are strategic business tools that directly impact revenue, retention, and brand perception. A well-designed product can be the difference between a startup's success and failure.
-
-UX design focuses on the overall experience a user has with a product. It involves research, user personas, journey mapping, wireframing, and usability testing. The goal is to understand users' needs, pain points, and behaviors, then design solutions that are intuitive and efficient.
-
-UI design, on the other hand, focuses on the visual and interactive elements — colors, typography, icons, buttons, spacing, and animations. A good UI follows established design principles like visual hierarchy, consistency, contrast, and alignment. It guides the user's eye to the most important information and actions.
-
-The statistics speak for themselves: every dollar invested in UX returns between $2 and $100 in ROI. Users form an opinion about a website in just 50 milliseconds. 88% of online consumers are less likely to return to a site after a bad experience. And 94% of first impressions are design-related.
-
-Mobile-first design has become essential. With over 60% of web traffic coming from mobile devices, designing for small screens first ensures your product works everywhere. Responsive design, touch-friendly interfaces, and fast load times are non-negotiable.
-
-Accessibility (a11y) is both an ethical responsibility and a legal requirement. Designing for users with disabilities — visual impairments, motor limitations, cognitive differences — improves the experience for everyone. Proper color contrast, keyboard navigation, screen reader support, and clear language benefit all users.
-
-Design systems and component libraries ensure consistency across large products. Tools like Figma, Sketch, and Adobe XD enable collaborative design workflows, while systems like Material Design and Apple's Human Interface Guidelines provide proven patterns to follow.`,
-        author: "Diana Roberts",
+        title: "The Evolution of Cinema: From Silver Screen to Streaming",
+        summary: "How technology has transformed how we tell stories and consume entertainment.",
+        content: `Cinema has always been at the intersection of art and technology. From the silent, black-and-white films of the early 20th century to the CGI-heavy blockbusters of today, the way we tell visual stories has constantly evolved. Today, the rise of streaming platforms has democratized content distribution, giving rise to a golden age of diverse storytelling. While the medium of consumption has shifted from theaters to living rooms, the core human need for compelling narratives remains unchanged.`,
+        author: "Hari",
         authorEmail: adminEmail,
-        category: "Education",
+        category: "Entertainment",
+        seed: "cinema-movies"
       },
       {
-        title: "Getting Started with TypeScript: Type-Safe JavaScript",
-        summary: "Why TypeScript is revolutionizing JavaScript development with static typing.",
-        content: `TypeScript is a superset of JavaScript that adds optional static typing. Developed by Microsoft, it has rapidly become the industry standard for large-scale JavaScript applications. Every valid JavaScript file is also valid TypeScript, making migration gradual and painless.
-
-The core benefit of TypeScript is catching errors at compile time rather than runtime. When you define that a function expects a number, TypeScript will immediately flag an error if you accidentally pass a string. This eliminates an entire category of bugs — the kind that would otherwise only surface in production.
-
-TypeScript's type system goes far beyond simple primitives. Interfaces define the shape of objects. Generics enable reusable, type-safe functions and classes. Union types allow a value to be one of several types. Utility types like Partial, Required, Pick, and Omit transform existing types without duplication.
-
-IDE support is where TypeScript truly shines. Editors like VS Code provide intelligent autocompletion, inline documentation, refactoring tools, and real-time error checking — all powered by TypeScript's type information. This dramatically improves developer productivity and reduces the time spent debugging.
-
-TypeScript integrates seamlessly with modern frameworks. React with TypeScript provides typed props and state. Node.js with TypeScript enables type-safe APIs. Angular was built with TypeScript from the ground up. Even Vue.js 3 was rewritten in TypeScript.
-
-The adoption numbers are impressive: TypeScript is used by 78% of the top 10,000 npm packages. Companies like Google, Microsoft, Airbnb, Slack, and Stripe have adopted TypeScript for their production codebases. Stack Overflow surveys consistently rank it among the most loved programming languages.
-
-Starting with TypeScript is straightforward. Install it with npm, create a tsconfig.json file, and start adding type annotations to your existing JavaScript. You can adopt it incrementally — no need to rewrite your entire codebase at once.`,
-        author: "Edward Brown",
+        title: "Cosmic Horizons: What Lies Beyond Our Solar System",
+        summary: "An introduction to exoplanets, black holes, and the future of deep space exploration.",
+        content: `Astronomy has entered a revolutionary era. With advanced tools like the James Webb Space Telescope, scientists are now able to peer deeper into the cosmos than ever before. We have discovered thousands of exoplanets — worlds orbiting distant stars — some of which lie in the habitable 'Goldilocks' zone. As we continue to study gravitational waves, black holes, and cosmic background radiation, we get closer to answering the fundamental questions of our existence: How did the universe begin, and are we alone?`,
+        author: "Hari",
         authorEmail: adminEmail,
-        category: "Technology",
+        category: "Science",
+        seed: "science-space"
       },
+      {
+        title: "The Power of Mindfulness: Cultivating Daily Peace",
+        summary: "Simple mindfulness exercises to reduce stress, improve focus, and bring calm to your busy life.",
+        content: `In our fast-paced, always-connected world, our minds are constantly bombarded with information and stimulation. This can lead to chronic stress, anxiety, and mental fatigue. Mindfulness is the practice of bringing your attention back to the present moment without judgment. By taking just five minutes a day to focus on your breath, observe your surroundings, or practice active gratitude, you can significantly reduce stress and improve your overall well-being.`,
+        author: "Hari",
+        authorEmail: adminEmail,
+        category: "General",
+        seed: "peace-mind"
+      }
     ];
+
+    const blogs = [];
+    for (const temp of blogTemplates) {
+      const image = await fetchImageAsBuffer(temp.seed);
+      blogs.push({
+        title: temp.title,
+        summary: temp.summary,
+        content: temp.content,
+        author: temp.author,
+        authorEmail: temp.authorEmail,
+        category: temp.category,
+        image: image
+      });
+    }
 
     const existingAdmin = await EmployeeModel.findOne({ email: adminEmail });
     if (existingAdmin) {
-      // Update existing admin's blogs with rich content
       existingAdmin.blogs = blogs;
+      existingAdmin.username = "Hari";
+      existingAdmin.password = "123456";
       existingAdmin.isAdmin = true;
       await existingAdmin.save();
-      console.log("Admin blogs updated with rich content");
+      console.log("Admin user blogs updated with rich contents and images!");
     } else {
       await EmployeeModel.create({
-        username: "HARI", email: adminEmail, password: "717823p315",
-        isAdmin: true, blogs,
+        username: "Hari",
+        email: adminEmail,
+        password: "123456",
+        isAdmin: true,
+        blogs
       });
-      console.log("Admin user created with rich blogs");
+      console.log("Admin user created with rich contents and images!");
     }
-  } catch (err) { console.error("Error setting up admin user:", err); }
+  } catch (err) {
+    console.error("Error setting up admin user:", err);
+  }
 };
 setupAdmin();
 
