@@ -50,3 +50,24 @@
   .cr-roles { flex-direction: column; }
   .cr-title { font-size: 1.6rem; }
 }
+
+/* Shimmer Loading Animations */
+.cr-shimmer {
+  display: inline-block;
+  width: 45px;
+  height: 24px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.06) 75%);
+  background-size: 200% 100%;
+  animation: cr-loading-shimmer 1.4s infinite linear;
+  border-radius: 6px;
+  vertical-align: middle;
+}
+
+@keyframes cr-loading-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.cr-stat-card.cr-skeleton {
+  pointer-events: none;
+}
