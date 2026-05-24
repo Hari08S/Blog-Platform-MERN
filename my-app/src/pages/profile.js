@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "./profile.css";
 
-export default function Profile({ user, onUserUpdate }) {
+export default function Profile({ user, onUserUpdate, onLogout }) {
   const [gender, setGender] = useState("");
   const [bio, setBio] = useState("");
   const [editMode, setEditMode] = useState(false);
@@ -47,7 +47,7 @@ export default function Profile({ user, onUserUpdate }) {
     }
   };
 
-  const handleLogout = () => { localStorage.removeItem("user"); navigate("/login"); };
+  const handleLogout = () => { localStorage.removeItem("user"); navigate("/login"); onLogout && onLogout(); };
 
   if (!user) return null;
 

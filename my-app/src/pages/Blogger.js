@@ -20,7 +20,7 @@ function timeAgo(dateStr) {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-export default function Blogger({ user }) {
+export default function Blogger({ user, onLogout }) {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -100,7 +100,7 @@ export default function Blogger({ user }) {
     } catch (err) { console.error(err); }
   };
 
-  const handleLogout = () => { localStorage.removeItem("user"); navigate("/login"); };
+  const handleLogout = () => { localStorage.removeItem("user"); navigate("/login"); onLogout && onLogout(); };
   const filtered = blogs.filter(b => b.title.toLowerCase().includes(search.toLowerCase()));
 
   return (

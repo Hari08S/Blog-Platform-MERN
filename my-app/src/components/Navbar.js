@@ -104,7 +104,7 @@ export default function Navbar({ user, showBack, backTo, onLogout }) {
               <AccountCircleIcon style={{ fontSize: 34, color: "#fff" }} />
             )}
             {dropdownOpen && (
-              <div className="nav-dropdown">
+              <div className="nav-dropdown" onClick={(e) => e.stopPropagation()}>
                 <div className="nav-dropdown-item" onClick={() => { setDropdownOpen(false); navigate("/profile"); }}>My Profile</div>
                 <div className="nav-dropdown-item" onClick={() => { setDropdownOpen(false); navigate("/choose-role"); }}>Dashboard</div>
                 <div className="nav-dropdown-item nav-dropdown-logout" onClick={() => { setDropdownOpen(false); onLogout && onLogout(); }}>Log Out</div>

@@ -23,7 +23,7 @@
   border-radius: 50%; pointer-events: none;
 }
 .cr-title { font-size: 2.2rem; font-weight: 300; color: rgba(255,255,255,0.9); margin: 0 0 0.5rem; position: relative; }
-.cr-name { font-weight: 700; background: linear-gradient(135deg, #f093fb, #f5576c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.cr-name { font-weight: 700; background: linear-gradient(135deg, #f093fb, #f5576c); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .cr-subtitle { color: rgba(255,255,255,0.4); font-size: 1.05rem; margin: 0; }
 
 /* Stats */
@@ -43,7 +43,7 @@
 .blogger-icon { background: linear-gradient(135deg, rgba(245,87,108,0.2), rgba(240,147,251,0.2)); color: #f5576c; }
 .cr-role-card h2 { color: #fff; font-size: 1.3rem; margin: 0 0 0.6rem; }
 .cr-role-card p { color: rgba(255,255,255,0.5); font-size: 0.85rem; line-height: 1.6; margin: 0 0 1rem; }
-.cr-role-action { font-size: 0.85rem; font-weight: 600; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.cr-role-action { font-size: 0.85rem; font-weight: 600; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 
 @media (max-width: 768px) {
   .cr-stats-grid { grid-template-columns: repeat(2, 1fr); }

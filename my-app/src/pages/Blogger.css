@@ -18,7 +18,7 @@
 .b-brand {
   font-family: 'Playfair Display', serif; font-size: 1.8rem;
   background: linear-gradient(135deg, #f093fb, #f5576c);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin: 0;
 }
 .b-header-right { display: flex; align-items: center; gap: 1rem; }
 .b-welcome { font-size: 0.9rem; color: rgba(255,255,255,0.7); }
@@ -188,7 +188,7 @@ input[type="file"].b-input::-webkit-file-upload-button {
 }
 .b-card-summary {
   font-size: 0.8rem; color: rgba(255,255,255,0.5); margin: 0 0 0.8rem;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .b-card-meta {
   display: flex; gap: 12px; font-size: 0.78rem;

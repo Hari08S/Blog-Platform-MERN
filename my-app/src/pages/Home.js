@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import "./Home.css";
 
-function Home() {
+function Home({ user }) {
   return (
     <div className="h-container">
       <header className="h-navbar">
@@ -12,13 +12,22 @@ function Home() {
           <span className="h-logo">Fusion Diaries</span>
         </div>
         <div className="h-nav-links">
-          <Link to="/login" className="h-link">About</Link>
-          <Link to="/login" className="h-link">Write</Link>
-          <Link to="/login" className="h-link">Sign In</Link>
-          <Link to="/login"><button className="h-cta-btn">Get Started</button></Link>
+          <Link to={user ? "/choose-role" : "/login"} className="h-link">About</Link>
+          <Link to={user ? "/blogger" : "/login"} className="h-link">Write</Link>
+          {user ? (
+            <>
+              <Link to="/choose-role" className="h-link">Dashboard</Link>
+              <Link to="/profile" className="h-link">Profile</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="h-link">Sign In</Link>
+              <Link to="/login"><button className="h-cta-btn">Get Started</button></Link>
+            </>
+          )}
         </div>
       </header>
-
+ 
       <div className="h-hero">
         <div className="h-hero-glow g1"></div>
         <div className="h-hero-glow g2"></div>
@@ -27,8 +36,8 @@ function Home() {
           <h1 className="h-title">Human stories<br/>& <span className="h-gradient">ideas</span></h1>
           <p className="h-subtitle">A place to read, write, and deepen your understanding. Share your perspective with a community that cares.</p>
           <div className="h-hero-btns">
-            <Link to="/login"><button className="h-start-btn">Start Reading</button></Link>
-            <Link to="/login"><button className="h-write-btn">Start Writing</button></Link>
+            <Link to={user ? "/reader" : "/login"}><button className="h-start-btn">Start Reading</button></Link>
+            <Link to={user ? "/blogger" : "/login"}><button className="h-write-btn">Start Writing</button></Link>
           </div>
           <div className="h-hero-stats">
             <div className="h-hero-stat"><strong>10K+</strong><span>Active Readers</span></div>

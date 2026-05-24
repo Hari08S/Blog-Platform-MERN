@@ -152,7 +152,7 @@ function BlogDetailModal({ blog, user, onClose, onLike, onComment, onDeleteComme
   );
 }
 
-export default function Reader({ user }) {
+export default function Reader({ user, onLogout }) {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -257,7 +257,7 @@ export default function Reader({ user }) {
   else if (sortBy === "discussed") filtered = [...filtered].sort((a, b) => (b.comments?.length || 0) - (a.comments?.length || 0));
   else filtered = [...filtered].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  const handleLogout = () => { localStorage.removeItem("user"); navigate("/login"); };
+  const handleLogout = () => { localStorage.removeItem("user"); navigate("/login"); onLogout && onLogout(); };
 
   return (
     <div className="r-container">
@@ -272,10 +272,21 @@ export default function Reader({ user }) {
       <div className="r-toolbar">
         <input className="r-search" placeholder="🔍  Search by title or author..." value={search} onChange={e => setSearch(e.target.value)} />
         <div className="r-toolbar-btns">
-          <button className={`r-sort-btn ${sortBy === "latest" ? "active" : ""}`} onClick={() => setSortBy("latest")}><NewReleases style={{fontSize:16}}/> Latest</button>
-          <button className={`r-sort-btn ${sortBy === "trending" ? "active" : ""}`} onClick={() => setSortBy("trending")}><TrendingUp style={{fontSize:16}}/> Trending</button>
-          <button className={`r-sort-btn ${sortBy === "discussed" ? "active" : ""}`} onClick={() => setSortBy("discussed")}><Forum style={{fontSize:16}}/> Discussed</button>
-          <button className={`r-bookmark-toggle ${showBookmarked ? "active" : ""}`} onClick={() => setShowBookmarked(!showBookmarked)}>
+          <button className={`r-sort-btn ${sortBy === "latest" ? "active" : ""}`} onClick={() => { setSortBy("latest"); setShowBookmarked(false); }}><NewReleases style={{fontSize:16}}/> Latest</button>
+          <button className={`r-sort-btn ${sortBy === "trending" ? "active" : ""}`} onClick={() => { setSortBy("trending"); setShowBookmarked(false); }}><TrendingUp style={{fontSize:16}}/> Trending</button>
+          <button className={`r-sort-btn ${sortBy === "discussed" ? "active" : ""}`} onClick={() => { setSortBy("discussed"); setShowBookmarked(false); }}><Forum style={{fontSize:16}}/> Discussed</button>
+          <button
+            className={`r-bookmark-toggle ${showBookmarked ? "active" : ""}`}
+            onClick={() => {
+              if (showBookmarked) {
+                setShowBookmarked(false);
+                setSortBy("latest");
+              } else {
+                setShowBookmarked(true);
+                setSortBy(null);
+              }
+            }}
+          >
             {showBookmarked ? <Bookmark /> : <BookmarkBorder />} Saved
           </button>
         </div>

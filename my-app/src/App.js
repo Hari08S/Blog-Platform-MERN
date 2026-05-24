@@ -34,17 +34,17 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Home user={user} onLogout={handleLogout} />} />
       <Route path="/login" element={user ? <Navigate to="/choose-role" /> : <Login onLogin={handleLogin} />} />
       <Route
         path="/choose-role"
         element={user ? <ChooseRole user={user} onLogout={handleLogout} /> : <Navigate to="/login" />}
       />
-      <Route path="/reader" element={user ? <Reader user={user} /> : <Navigate to="/login" />} />
-      <Route path="/blogger" element={user ? <Blogger user={user} /> : <Navigate to="/login" />} />
+      <Route path="/reader" element={user ? <Reader user={user} onLogout={handleLogout} /> : <Navigate to="/login" />} />
+      <Route path="/blogger" element={user ? <Blogger user={user} onLogout={handleLogout} /> : <Navigate to="/login" />} />
       <Route
         path="/profile"
-        element={user ? <Profile user={user} onUserUpdate={handleUserUpdate} /> : <Navigate to="/login" />}
+        element={user ? <Profile user={user} onUserUpdate={handleUserUpdate} onLogout={handleLogout} /> : <Navigate to="/login" />}
       />
       <Route path="*" element={<Navigate to={user ? "/choose-role" : "/login"} />} />
     </Routes>

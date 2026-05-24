@@ -26,6 +26,7 @@
   font-size: 1.8rem;
   background: linear-gradient(135deg, #f093fb, #f5576c);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
 }
@@ -147,12 +148,12 @@
 .r-card-title {
   font-size: 1.15rem; font-weight: 700; margin: 0 0 0.5rem;
   color: #fff; line-height: 1.3;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .r-card-summary {
   font-size: 0.85rem; color: rgba(255,255,255,0.5); margin: 0 0 1rem;
   line-height: 1.5;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .r-card-footer { display: flex; justify-content: space-between; align-items: center; }
 .r-card-author { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; }
